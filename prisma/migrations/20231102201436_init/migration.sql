@@ -1,0 +1,8 @@
+-- CreateTable
+CREATE TABLE "Name" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "lastname" TEXT NOT NULL,
+    "createdName" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedName" DATETIME NOT NULL
+);
