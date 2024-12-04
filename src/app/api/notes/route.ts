@@ -3,8 +3,8 @@ import { prisma } from '@/prisma'
 
 export async function GET (){
 
-	const names= await prisma.name.findMany()
-	return NextResponse.json(names);
+	const notes= await prisma.name.findMany()
+	return NextResponse.json(notes);
 }
 
 export async function POST (request : Request ){

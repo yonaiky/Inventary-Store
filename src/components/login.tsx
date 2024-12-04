@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { RegisterUserModal } from "./user/register-user"; 
+import { RegisterUserModal } from "./user/register-user"
 
 export function Login() {
   const [showRegisterModal, setShowRegisterModal] = useState(false)
@@ -40,7 +40,12 @@ export function Login() {
           Register
         </Button>
       </div>
-      {showRegisterModal && <RegisterUserModal />}
+      {showRegisterModal && (
+        <RegisterUserModal
+          open={showRegisterModal}
+          onClose={() => setShowRegisterModal(false)}
+        />
+      )}
     </div>
   )
 }

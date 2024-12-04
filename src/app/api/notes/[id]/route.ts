@@ -2,17 +2,17 @@ import { NextResponse } from "next/server";
 
 export function GET (){
 	return NextResponse.json({
-		message: 'getting single name...'
+		message: 'getting single notes...'
 	})
 }
 export function DELETE (){
 	return NextResponse.json({
-		message: 'Delete single name' 
+		message: 'Delete single notes' 
 	})
 }
 
 export function PUT(){
 	return NextResponse.json({
-		message: 'Update single name'
+		message: 'Update single notes'
 	})
 }

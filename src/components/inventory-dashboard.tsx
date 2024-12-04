@@ -21,7 +21,6 @@ import {
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Mock data for the inventory
 const inventoryData = [
   { id: 1, name: 'Product A', quantity: 100, price: 10 },
   { id: 2, name: 'Product B', quantity: 150, price: 15 },
