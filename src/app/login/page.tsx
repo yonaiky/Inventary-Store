@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
+
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +33,7 @@ export default function LoginPage() {
 
       if (response.ok) {
         // Redirigir al usuario si el inicio de sesión es exitoso
-     console.log("Logeado correctamente")
+        router.push("/login/register"); 
       } else {
         // Mostrar el error si el inicio de sesión falla
         setError(data.message || "An error occurred");
@@ -42,7 +44,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full flex justify-end items-center bg-gradient-to-br from-purple-900 to-blue-100 p-4">
+	<main className="flex min-h-screen flex-col items-center justify-center p-24">
+ <div className="w-full flex justify-end items-center bg-gradient-to-br from-purple-900 to-blue-100 p-4">
       <div className="w-full max-w-screen-md">
         <div className="bg-white shadow-2xl rounded-lg p-8 space-y-6">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Store System</h1>
@@ -87,7 +90,7 @@ export default function LoginPage() {
             </Link>
             <div className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link href="/signup" className="text-blue-600 hover:underline">
+              <Link href="/login/register" className="text-blue-600 hover:underline">
                 Sign up
               </Link>
             </div>
@@ -95,5 +98,7 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+    </main>
+   
   );
 }
