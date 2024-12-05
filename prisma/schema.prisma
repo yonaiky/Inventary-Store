@@ -10,22 +10,121 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Notes {
-    id          Int      @id @default(autoincrement())
-    name        String
-    lastname    String
-    createdName DateTime @default(now())
-    updatedName DateTime @updatedAt
+// Tabla para gestionar usuarios del sistema
+model User {
+    id                   Int                    @id @default(autoincrement()) // Identificador único del usuario
+    name                 String // Nombre del usuario
+    lastname             String // Apellido del usuario
+    username             String                 @unique // Nombre de usuario único
+    password             String // Contraseña del usuario
+    email                String                 @unique // Correo electrónico único
+    phoneNumber          String // Número de teléfono
+    roleId               Int // Identificador del rol asociado al usuario
+    role                 Role                   @relation(fields: [roleId], references: [id]) // Relación con la tabla de roles
+    orders               Order[] // Relación con las órdenes realizadas por el usuario
+    createdAt            DateTime               @default(now()) // Fecha de creación del registro
+    updatedAt            DateTime               @updatedAt // Fecha de última actualización del registro
+    InventoryTransaction InventoryTransaction[]
 }
 
-model User {
-    id          Int      @id @default(autoincrement())
-    name        String
-    lastname    String
-    username    String
-	password 	String 
-	email       String 
-	phoneNumber Int 
-    createdName DateTime @default(now())
-    updatedName DateTime @updatedAt
+// Tabla para gestionar roles de los usuarios
+model Role {
+    id    Int    @id @default(autoincrement()) // Identificador único del rol
+    name  String @unique // Nombre del rol
+    users User[] // Relación con los usuarios que tienen este rol
+}
+
+// Tabla para gestionar los productos en el inventario
+model Product {
+    id                   Int                    @id @default(autoincrement()) // Identificador único del producto
+    name                 String // Nombre del producto
+    description          String? // Descripción del producto (opcional)
+    price                Float // Precio del producto
+    stock                Int // Cantidad disponible en inventario
+    categoryId           Int // Identificador de la categoría asociada al producto
+    category             Category               @relation(fields: [categoryId], references: [id]) // Relación con la tabla de categorías
+    stockItems           StockItem[] // Relación con los ítems del inventario
+    orderItems           OrderItem[] // Relación con los ítems de órdenes que contienen este producto
+    createdAt            DateTime               @default(now()) // Fecha de creación del producto
+    updatedAt            DateTime               @updatedAt // Fecha de última actualización del producto
+    Supplier             Supplier?              @relation(fields: [supplierId], references: [id])
+    supplierId           Int?
+    InventoryTransaction InventoryTransaction[]
+}
+
+// Tabla para categorizar los productos
+model Category {
+    id          Int       @id @default(autoincrement()) // Identificador único de la categoría
+    name        String    @unique // Nombre único de la categoría
+    description String? // Descripción opcional de la categoría
+    products    Product[] // Relación con los productos de esta categoría
+    createdAt   DateTime  @default(now()) // Fecha de creación del registro
+    updatedAt   DateTime  @updatedAt // Fecha de última actualización del registro
+}
+
+// Tabla para registrar órdenes o ventas
+model Order {
+    id         Int         @id @default(autoincrement()) // Identificador único de la orden
+    userId     Int // Identificador del usuario que realizó la orden
+    user       User        @relation(fields: [userId], references: [id]) // Relación con la tabla de usuarios
+    total      Float // Total de la orden
+    status     String // Estado de la orden (pendiente, completada, cancelada)
+    orderItems OrderItem[] // Relación con los productos incluidos en la orden
+    createdAt  DateTime    @default(now()) // Fecha de creación de la orden
+    updatedAt  DateTime    @updatedAt // Fecha de última actualización de la orden
+}
+
+// Tabla para los detalles de cada producto en una orden
+model OrderItem {
+    id        Int     @id @default(autoincrement()) // Identificador único del detalle
+    orderId   Int // Identificador de la orden asociada
+    order     Order   @relation(fields: [orderId], references: [id]) // Relación con la tabla de órdenes
+    productId Int // Identificador del producto incluido
+    product   Product @relation(fields: [productId], references: [id]) // Relación con la tabla de productos
+    quantity  Int // Cantidad del producto en la orden
+    price     Float // Precio del producto en la orden
+}
+
+// Tabla para gestionar los almacenes
+model Warehouse {
+    id         Int         @id @default(autoincrement()) // Identificador único del almacén
+    name       String // Nombre del almacén
+    location   String // Ubicación del almacén
+    stockItems StockItem[] // Relación con los productos almacenados
+    createdAt  DateTime    @default(now()) // Fecha de creación del registro
+    updatedAt  DateTime    @updatedAt // Fecha de última actualización del registro
+}
+
+// Tabla para controlar el inventario en los almacenes
+model StockItem {
+    id          Int       @id @default(autoincrement()) // Identificador único del stock
+    warehouseId Int // Identificador del almacén asociado
+    warehouse   Warehouse @relation(fields: [warehouseId], references: [id]) // Relación con la tabla de almacenes
+    productId   Int // Identificador del producto en inventario
+    product     Product   @relation(fields: [productId], references: [id]) // Relación con la tabla de productos
+    quantity    Int // Cantidad disponible en el almacén
+    createdAt   DateTime  @default(now()) // Fecha de creación del registro
+    updatedAt   DateTime  @updatedAt // Fecha de última actualización del registro
+}
+
+// Tabla para gestionar proveedores
+model Supplier {
+    id          Int       @id @default(autoincrement()) // Identificador único del proveedor
+    name        String // Nombre del proveedor
+    contactInfo String // Información de contacto
+    products    Product[] // Relación con los productos suministrados por el proveedor
+    createdAt   DateTime  @default(now()) // Fecha de creación del registro
+    updatedAt   DateTime  @updatedAt // Fecha de última actualización del registro
+}
+
+// Tabla para registrar movimientos de inventario
+model InventoryTransaction {
+    id        Int      @id @default(autoincrement()) // Identificador único de la transacción
+    productId Int // Identificador del producto
+    product   Product  @relation(fields: [productId], references: [id]) // Relación con la tabla de productos
+    type      String // Tipo de transacción (entrada, salida, ajuste)
+    quantity  Int // Cantidad afectada por la transacción
+    userId    Int // Identificador del usuario que realizó la transacción
+    user      User     @relation(fields: [userId], references: [id]) // Relación con la tabla de usuarios
+    createdAt DateTime @default(now()) // Fecha de la transacción
 }

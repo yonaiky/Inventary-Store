@@ -1,51 +1,99 @@
-"use client"
+'use client';
 
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { RegisterUserModal } from "./user/register-user"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
-export function Login() {
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
+export default function LoginPage() {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ identifier, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Redirigir al usuario si el inicio de sesión es exitoso
+     console.log("Logeado correctamente")
+      } else {
+        // Mostrar el error si el inicio de sesión falla
+        setError(data.message || "An error occurred");
+      }
+    } catch (err) {
+      setError("An error occurred");
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form className="space-y-4 w-80">
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
-          />
+    <div className="w-full flex justify-end items-center bg-gradient-to-br from-purple-900 to-blue-100 p-4">
+      <div className="w-full max-w-screen-md">
+        <div className="bg-white shadow-2xl rounded-lg p-8 space-y-6">
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Store System</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Username or Email</Label>
+              <Input
+                id="email"
+                type="text"  // Cambié de 'email' a 'text' para aceptar tanto email como nombre de usuario
+                placeholder="you@example.com"
+                required
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {error && <div className="text-red-500 text-center">{error}</div>}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">Remember me</label>
+            </div>
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+          </form>
+          <div className="text-center space-y-2">
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+              Forgot your password?
+            </Link>
+            <div className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link href="/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </Link>
+            </div>
+          </div>
         </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm"
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-      </form>
-      <div className="mt-4">
-        <Button variant="outline" onClick={() => setShowRegisterModal(true)}>
-          Register
-        </Button>
       </div>
-      {showRegisterModal && (
-        <RegisterUserModal
-          open={showRegisterModal}
-          onClose={() => setShowRegisterModal(false)}
-        />
-      )}
     </div>
-  )
+  );
 }
